@@ -1,1 +1,1 @@
-react app
+MERN APP - MiniAmazon Shopping system
