@@ -1,0 +1,37 @@
+{
+  "name": "amazona",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "react app",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --watch backend --exec node --experimental-modules backend/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yoyowky/miniamazon.git"
+  },
+  "keywords": [
+    "wky!199186"
+  ],
+  "author": "yoyowang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yoyowky/miniamazon/issues"
+  },
+  "homepage": "https://github.com/yoyowky/miniamazon#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.11.9"
+  },
+  "devDependencies": {
+    "eslint": "^7.16.0",
+    "eslint-plugin-react": "^7.22.0",
+    "nodemon": "^2.0.6"
+  }
+}
