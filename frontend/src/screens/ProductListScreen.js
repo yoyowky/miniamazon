@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { listProducts, createProduct } from '../actions/productActions';
+import { listProducts, createProduct, deleteProduct } from '../actions/productActions';
 import MessageBox from '../components/MessageBox';
 import LoadingBox from '../components/LoadingBox';
-import { PRODUCT_CREATE_RESET } from '../constants/productConstants';
+import { PRODUCT_CREATE_RESET, PRODUCT_DELETE_RESET } from '../constants/productConstants';
 
 const ProductListScreen = (props) => {
     //打开page，会loading两遍，第一遍productlist是空的，之后那一遍才有值
@@ -17,15 +17,27 @@ const ProductListScreen = (props) => {
         product: createdProduct
     } = productCreate;
     const dispatch = useDispatch();
+    const productDelete = useSelector(state => state.productDelete);
+    const {
+        loading: deleteLoading,
+        error: deleteError,
+        success: deleteSuccess,
+    } = productDelete;
     useEffect(() => {
         if(successCreate){
             dispatch({type: PRODUCT_CREATE_RESET});
             props.history.push(`/product/${createdProduct._id}/edit`)
         }
+        if(deleteSuccess){
+            dispatch({type: PRODUCT_DELETE_RESET});
+        }
       dispatch(listProducts());
-    }, [createdProduct, dispatch, props.history, successCreate]);
-    const deleteHandler = () => {
-      /// TODO: dispatch delete action
+    }, [createdProduct, deleteSuccess, dispatch, props.history, successCreate]);
+    
+    const deleteHandler = (product) => {
+        if(window.confirm('Are you sure to delete?')){
+            dispatch(deleteProduct(product._id))
+        }
     };
     const createHandler = () => {
         dispatch(createProduct());
@@ -41,6 +53,10 @@ const ProductListScreen = (props) => {
                     Create Product
                 </button>
             </div>
+            { deleteLoading && <LoadingBox></LoadingBox>}
+            { deleteError && (
+                <MessageBox variant="danger">{deleteError}</MessageBox>
+            )}
             {loadingCreate && <LoadingBox></LoadingBox>}
             {errorCreate && <MessageBox variant="danger">{errorCreate}</MessageBox>}
             {loading ? (
