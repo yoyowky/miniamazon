@@ -10,7 +10,6 @@ orderRouter.get(
   isAuth,
   expressAsyncHandler(async(req, res) => {
     const orders = await Order.find({}).populate('user', 'name'); // get order.user.name
-    console.log('orders', orders)
     res.send(orders)
   })
 )

@@ -7,7 +7,6 @@ import MessageBox from '../components/MessageBox';
 const OrderListScreen = (props) => {
     const orderList = useSelector(state => state.orderList);
     const {loading, error, orders} = orderList;
-    console.log('orders',orders)
     const dispatch = useDispatch();
     useEffect(()=> {
         dispatch(listOrders());

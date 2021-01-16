@@ -119,13 +119,11 @@ export const listOrders = () => async(dispatch, getState) => {
         const {data} = await Axios.get('/api/orders', {
             headers: { Authorization: `Bearer ${userInfo.token}`},
         });
-        console.log('data', data)
         dispatch({
             type: ORDER_LIST_SUCCESS,
             payload: data
         })
     } catch(error){
-        console.log('error', error)
         const message = 
         error.response && error.response.data.message
         ? error.response.data.message

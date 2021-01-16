@@ -23,7 +23,6 @@ function App() {
   const {cartItems} = cart;
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
-  console.log('userInfo', userInfo)
   const dispatch = useDispatch();
   const signoutHandler = () => {
     dispatch(signout());
