@@ -1,7 +1,7 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import Order from '../models/orderModel.js';
-import { isAuth } from '../utils.js';
+import { isAuth, isAdmin } from '../utils.js';
 
 const orderRouter = express.Router();
 
@@ -89,6 +89,22 @@ orderRouter.put(
     })
   );
 
-
+orderRouter.delete(
+  '/:id',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async(req, res) => {
+    const order = await Order.findById(req.params.id);
+    if(order){
+      const deleteOrder = await order.delete();
+      res.send({
+        message: `Success delete order ${req.params.id}`,
+        order: deleteOrder
+      })
+    } else {
+      res.status(404).send({message: 'Order Not Found'});
+    }
+  })
+)
 
  export default orderRouter;

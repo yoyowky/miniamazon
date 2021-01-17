@@ -1,22 +1,41 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { listOrders } from '../actions/orderActions';
+import { listOrders, deleteOrder } from '../actions/orderActions';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
+import { ORDER_DELETE_RESET } from '../constants/orderConstants';
 
 const OrderListScreen = (props) => {
     const orderList = useSelector(state => state.orderList);
     const {loading, error, orders} = orderList;
+    const orderDelete = useSelector(state => state.orderDelete);
+    const {
+        loading: deleteLoading,
+        success: deleteSuccess,
+        error: deleteError,
+    } = orderDelete;
     const dispatch = useDispatch();
     useEffect(()=> {
+        if(deleteSuccess){
+            console.log('22222')
+            dispatch({type: ORDER_DELETE_RESET})
+        }
         dispatch(listOrders());
-    },[dispatch])
-    const onDeleteHandler = ()=>{
-        console.log('This is delete')
+    },[deleteSuccess, dispatch])
+
+
+    const onDeleteHandler = (order)=>{
+        if(window.confirm('Are you sure to delete?')){
+            dispatch(deleteOrder(order._id));
+        }
     }
     return (
         <div>
             <h1>Orders</h1>
+            {deleteLoading && <LoadingBox></LoadingBox>}
+            {deleteError && (
+                <MessageBox variant="danger">{deleteError}</MessageBox>
+            )}
             {loading?<LoadingBox></LoadingBox>
             : error?(
                 <MessageBox variant="danger">{error}</MessageBox>
@@ -54,7 +73,7 @@ const OrderListScreen = (props) => {
                                     <button
                                         type="button"
                                         className="small"
-                                        onClick={onDeleteHandler}
+                                        onClick={() => onDeleteHandler(order)} // need to add in callback, if not, onDeleteHandler will render when open the page
                                     >Delete</button>
                                 </td>
                             </tr>
