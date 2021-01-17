@@ -49,6 +49,7 @@ const ProductListScreen = (props) => {
                 <button
                     type="button"
                     className="primary"
+                    // no parameter to pass
                     onClick={createHandler}>
                     Create Product
                 </button>
@@ -95,6 +96,7 @@ const ProductListScreen = (props) => {
                                 <button
                                     type="button"
                                     className="small"
+                                    // has parameter to pass, use arrow functions
                                     onClick={()=>deleteHandler(product)}>
                                     Delete
                                 </button>

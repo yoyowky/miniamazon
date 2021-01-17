@@ -124,7 +124,7 @@ const PlaceOrderScreen = (props) => {
               <li>
                 <button
                   type="button"
-                  onClick={placeOrderHandler}
+                  onClick={placeOrderHandler} //no parameter to pass
                   className="primary block"
                   disabled={cart.cartItems.length === 0}
                 >
