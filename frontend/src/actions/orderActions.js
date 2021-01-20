@@ -1,4 +1,4 @@
-import { ORDER_CREATE_REQUEST, ORDER_CREATE_FAIL, ORDER_CREATE_SUCCESS, ORDER_DETAILS_REQUEST, ORDER_DETAILS_FAIL, ORDER_DETAILS_SUCCESS, ORDER_PAY_REQUEST, ORDER_PAY_FAIL, ORDER_PAY_SUCCESS, ORDER_MINE_LIST_REQUEST, ORDER_MINE_LIST_FAIL, ORDER_MINE_LIST_SUCCESS, ORDER_LIST_REQUEST, ORDER_LIST_FAIL, ORDER_LIST_SUCCESS, ORDER_DELETE_REQUEST, ORDER_DELETE_SUCCESS } from "../constants/orderConstants"
+import { ORDER_CREATE_REQUEST, ORDER_CREATE_FAIL, ORDER_CREATE_SUCCESS, ORDER_DETAILS_REQUEST, ORDER_DETAILS_FAIL, ORDER_DETAILS_SUCCESS, ORDER_PAY_REQUEST, ORDER_PAY_FAIL, ORDER_PAY_SUCCESS, ORDER_MINE_LIST_REQUEST, ORDER_MINE_LIST_FAIL, ORDER_MINE_LIST_SUCCESS, ORDER_LIST_REQUEST, ORDER_LIST_FAIL, ORDER_LIST_SUCCESS, ORDER_DELETE_REQUEST, ORDER_DELETE_SUCCESS, ORDER_DELIVER_REQUEST, ORDER_DELIVER_FAIL, ORDER_DELIVER_SUCCESS } from "../constants/orderConstants"
 import Axios from "axios";
 // import { useSelector } from "react-redux";
 import { CART_EMPTY } from "../constants/cartConstants";
@@ -159,4 +159,32 @@ export const deleteOrder = (orderId) => async(dispatch, getState) => {
             payload: message
         });
     }
-} 
+}
+
+export const deliverOrder = (orderId) => async(dispatch, getState) => {
+    dispatch({
+        type: ORDER_DELIVER_REQUEST,
+        payload: orderId
+    });
+    try{
+        const {userSignin:{userInfo}} = getState();
+        const {data} = await Axios.put(
+            `/api/orders/${orderId}/deliver`,
+            {},
+            {headers: { Authorization: `Bearer ${userInfo.token}` }}
+        );
+        dispatch({
+            type: ORDER_DELIVER_SUCCESS,
+            payload: data
+        })
+    } catch(error){
+        const message =
+        error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message;
+        dispatch({
+            type: ORDER_DELIVER_FAIL,
+            payload: message
+        });
+    }
+}

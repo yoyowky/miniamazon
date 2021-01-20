@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import { PayPalButton } from 'react-paypal-button-v2';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
-import { detailsOrder, payOrder } from '../actions/orderActions';
+import { detailsOrder, payOrder, deliverOrder } from '../actions/orderActions';
 import Axios from 'axios';
-import { ORDER_PAY_RESET } from '../constants/orderConstants';
+import { ORDER_PAY_RESET, ORDER_DELIVER_RESET } from '../constants/orderConstants';
 
 const OrderScreen = (props) => {
   const orderId = props.match.params.id; // get order ID fround url
@@ -19,7 +19,14 @@ const OrderScreen = (props) => {
     error: errorPay,
     success: successPay 
   } = orderPay;
-
+  const userSignin = useSelector(state => state.userSignin);
+  const {userInfo} = userSignin;
+  const orderDeliver = useSelector(state => state.orderDeliver);
+  const {
+    loading: orderDeliverLoading,
+    error: orderDeliverError,
+    success: orderDeliverSuccess
+  } = orderDeliver;
   const dispatch = useDispatch();
   useEffect(() => {
     const addPayPalScript = async () => {
@@ -35,9 +42,14 @@ const OrderScreen = (props) => {
       };
       document.body.appendChild(script); // the addPayPalScript will add as the last of child of your body of html document
     };
-    if(!order || successPay || (order && order._id !== orderId)){ //order is not load || pay is success need to reloading the order || order id not the same, refresh the page and update the page based on the new order
+    if(
+      !order
+      || successPay
+      || orderDeliverSuccess
+      || (order && order._id !== orderId)){ //order is not load || pay is success need to reloading the order || order id not the same, refresh the page and update the page based on the new order
       dispatch({type:ORDER_PAY_RESET});
-      dispatch(detailsOrder(orderId)); // load the order
+      dispatch({ type: ORDER_DELIVER_RESET });
+      dispatch(detailsOrder(orderId)); // load the order //  NEED WRITE IN USEEFFECT FUNCTION, AS WHEN YOU PAY AND DELIVER, THE DETAIL WILL CHANGE!!!
     } else {
       if(!order.isPaid){
         if(!window.paypal){ // check if already load the paypal
@@ -49,10 +61,13 @@ const OrderScreen = (props) => {
       }
     }
     
-  }, [dispatch, order, orderId, sdkReady, successPay]);
+  }, [dispatch, order, orderDeliverSuccess, orderId, sdkReady, successPay]);
 
   const successPaymentHandler = (paymentResult) => {
     dispatch(payOrder(order, paymentResult));
+  }
+  const deliverHandler = () =>{
+    dispatch(deliverOrder(orderId));
   }
   return loading
   ?(<LoadingBox></LoadingBox>)
@@ -171,6 +186,21 @@ const OrderScreen = (props) => {
                       ></PayPalButton>
                     </>
                     )}
+                  </li>
+                )
+              }
+              {
+                userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                  <li>
+                    {orderDeliverLoading && <LoadingBox></LoadingBox>}
+                    {orderDeliverError && (
+                      <MessageBox variant="danger">{orderDeliverError}</MessageBox>
+                    )}
+                    <button
+                      ttpe="button"
+                      className="primary block"
+                      onClick={deliverHandler}
+                    >Deliver Order</button>
                   </li>
                 )
               }
